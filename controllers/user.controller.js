@@ -1,4 +1,5 @@
 const { Usermodel } = require("../models/user");
+const { zodusern } = require("../schema/schema");
 
 
 const profile = async (req, res, next)  => {
@@ -24,17 +25,21 @@ const profile = async (req, res, next)  => {
     }
 }
 
-const profiledit = async(req, res, next){
+const profiledit = async(req, res, next) => {
     try{
         const userme = req.userid;
-        const { bio, image, username } = req.body
+        const user = req.body;
 
-        if(!username){
-            return res.status.json({
-                message: "Atleast put username"
+        const postload = zodusern.safeParse(user);
+
+        if(!postload.success){
+            return res.status(404).json({
+                message: "Incorrect Credential"
             })
         }
-        
+
+        const { bio, image, username } = postload.data
+
         const profile = await Usermodel.findOneAndUpdate(
             { _id: userme },
             {
@@ -43,14 +48,24 @@ const profiledit = async(req, res, next){
                 username: username
             },
             {new: true}
-        ).select("-__v -password")
+        ).select("-__v -password");
 
         if(!profile){
             return res.status(403).json({
                 message: ""
             })
         }
+
+        return res.status(201).json({
+            User: "Profile Updated",
+            profile: profile
+        })
+        
     }catch(e){
         next(e)
     }
+}
+
+module.exports = {
+    profile, profiledit
 }

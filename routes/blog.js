@@ -1,19 +1,19 @@
 const { Router } = require("express");
-const { blog } = require("../controllers/blog.controller");
+const { blog, userblog, postblog, putblog, deleteblog } = require("../controllers/blog.controller");
+const { userMiddleware } = require("../middleware/userMiddlerware");
 
 const blogRoute = Router();
 
 blogRoute.get("/", blog)
 
-blogRoute.post("/blog", userMiddleware, )
+blogRoute.get("/blog", userMiddleware, userblog)
 
-blogRoute.put("/blog", userMiddleware,)
+blogRoute.post("/blog", userMiddleware, postblog)
 
-blogRoute.delete("/blog", (req, res) => {
+blogRoute.put("/blog", userMiddleware, putblog)
 
-})
+blogRoute.delete("/blog", userMiddleware, deleteblog)
 
-blogRoute.get("/blog", userMiddleware, )
 
 module.exports = {
     blogRoute

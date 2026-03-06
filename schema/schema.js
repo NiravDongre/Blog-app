@@ -23,5 +23,6 @@ const zodusern = z.object({
 })
 
 module.exports = {
-    requiredbody
+    requiredbody,
+    zodusern
 }

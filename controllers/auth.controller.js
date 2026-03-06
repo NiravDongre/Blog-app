@@ -1,8 +1,13 @@
+const { JWT_USER_SECRET } = require("../config/config");
 const { Usermodel } = require("../models/user");
 const { requiredbody } = require("../schema/schema");
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
 
 const signup = async (req, res, next) => {
-    
+
+    try{
     const protected = req.body
     const parsedData = requiredbody.safeParse(protected)
 
@@ -24,7 +29,6 @@ const signup = async (req, res, next) => {
 
     const passwordlocker =  await bcrypt.hash(password, 5);
 
-    try{
     await Usermodel.create({
         email: email,
         password: passwordlocker
@@ -33,23 +37,25 @@ const signup = async (req, res, next) => {
         message: "You have Signed Up"
     });
     }catch(e){
-        res.json({
+        next(e)
+        return res.status(404).json({
             message: "Something Broke"
         })
     }
 
 }
 
+
 const signin = async (req, res, next) => {
 
     try{
+
     const protected = req.body;
     const parsedData = requiredbody.safeParse(protected)
 
     if(!parsedData.success){
         return res.json({message: "Incorrect Credentials"})
     }
-
 
     const { email, password } = req.body;
 
@@ -66,11 +72,10 @@ const signin = async (req, res, next) => {
     const passwordmatcher = await bcrypt.compare(password, protect.password);
 
     if(!passwordmatcher){
-        return res.json({
+        return res.status(403).json({
             message: "Incorrect password"
         })
     }
-    
         const token = jwt.sign({
             _id : protect._id.toString()
         }, JWT_USER_SECRET);
@@ -79,11 +84,13 @@ const signin = async (req, res, next) => {
             token: token,
             message: "User has Sign IN"
         })
-    }
+
+    } catch(e) {
+
+        next(e)
         return res.status(403).json({
-            message: "Unauthrized or User not Found"
-})
-    
+        message: "Unauthrized or User not Found"});
+    }
 }
 
 module.exports = {
