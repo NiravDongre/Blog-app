@@ -12,9 +12,9 @@ Features
 - Secure routes
 
 API Endpoints
-POST /signup
-POST /login
-GET /posts
-POST /posts
-PUT /posts/:id
-DELETE /posts/:id
+- POST /signup
+- POST /login
+- GET /posts
+- POST /posts
+- PUT /posts/:id
+- DELETE /posts/:id
